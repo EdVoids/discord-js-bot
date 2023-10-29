@@ -53,9 +53,8 @@ function getExistingTicketChannel(guild, userId) {
 async function parseTicketDetails(channel) {
   if (!channel.topic) return;
   const split = channel.topic?.split("|");
-  const userId = split[1];
+  const user = split[1];
   const catName = split[2] || "Default";
-  const user = await channel.client.users.fetch(userId, { cache: false }).catch(() => {});
   return { user, catName };
 }
 
@@ -103,7 +102,7 @@ async function closeTicket(channel, closedBy, reason) {
     fields.push(
       {
         name: "Opened By",
-        value: ticketDetails.user ? ticketDetails.user.username : "Unknown",
+        value: ticketDetails ? ticketDetails.user : "Unknown",
         inline: true,
       },
       {
@@ -241,6 +240,7 @@ async function handleTicketOpen(interaction) {
     });
 
     const embed = new EmbedBuilder()
+      .setColor(TICKET.CREATE_EMBED)
       .setAuthor({ name: `Ticket #${ticketNumber}` })
       .setDescription(
         `Hello ${user.toString()}
